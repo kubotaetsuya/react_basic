@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  rb_mysql:
+    build:
+      context: ./mysql
+      dockerfile: Dockerfile
+    volumes: 
+      - ./mysql/mysql_data:/var/lib/mysql
+    container_name: rb_mysql
+    tty: true
+    restart: always
+    ports: 
+      - 3306:3306
+    networks:
+      - react-basic
+  rb_api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    volumes:
+      - ./api:/var/www/html/app/react_basic/api
+    container_name: rb_api
+    stdin_open: true
+    tty: true
+    ports:
+      - 3001:3001
+    depends_on:
+      - rb_mysql
+    networks:
+      - react-basic
+  # ログイン機能課題から以下をコメントイン
+  rb_client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    volumes:
+      - ./client:/var/www/html/app/react_basic/client
+      - ./client/node_modules:/var/www/html/app/react_basic/client/node_modules
+    container_name: rb_client
+    tty: true
+    ports:
+      - 3000:3000
+    networks:
+      - react-basic
+  # ログイン機能課題 ここまでコメントイン
+networks:
+  react-basic:
+    driver: bridge
