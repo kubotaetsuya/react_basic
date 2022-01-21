@@ -1,10 +1,10 @@
-import HelloReact from "./components/HelloReact";
+import Navigation from "./components/Navigation";
 
 const App = () => {
 
   return (
     <>
-      <HelloReact />
+      <Navigation />
     </>
   )
 
