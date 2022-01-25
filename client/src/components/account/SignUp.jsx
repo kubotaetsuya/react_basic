@@ -17,7 +17,7 @@ const SignUp = () => {
   const url = "http://localhost:3001/api/v1/auth";
 
   // React Hook Form オブジェクト
-  const { register, handleSubmit, watch, formState: { errors }, getValues } = useForm();
+  const {register, handleSubmit, watch, formState: { errors }, getValues, reset} = useForm();
 
   // 各インプットの状態管理
   const watchData = watch({
@@ -39,12 +39,13 @@ const SignUp = () => {
   // アカウント登録イベント
   const accountRegistration = () => {
     axios.post(url, watchData, headers)
-    .then(res => {
-      alert("登録が成功しました")
-      window.location.href("http://ocalhost:3001/sign-up");
+    .then(response => {
+      alert("登録が成功しました");
+      reset();
+      window.location.href = "http://localhost:3000/sign-up";
     })
-    .catch(e => {
-      alert("登録に失敗しました")
+    .catch(error => {
+      alert("登録に失敗しました");
       setFlgConfirmation(false)
     })
   }
@@ -54,7 +55,7 @@ const SignUp = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit(toggleFlgConfirmation)}>
+    <form onSubmit={handleSubmit(accountRegister)}>
       <label htmlFor="first_name">姓 :</label>
       <input
         type="text"
@@ -113,13 +114,28 @@ const SignUp = () => {
       <input
       type="text"
       name="password_confirmation"
-      {...register("password_confirmation", {required: "確認用パスワードは必須です。", validate: value => value === getValues('password') || <span>パスワードが一致しません。</span>})}
+      {...register("password_confirmation", {
+        required: "確認用パスワードは必須です。",
+        validate: value => value === getValues('password') || <span>パスワードが一致しません。</span>
+      })}
       />
       {errors.password_confirmation && <span>{errors.password_confirmation.message}</span>}<br/>
 
-      {!flgConfirmation && <button type="submit">確認</button>}
+      {!flgConfirmation && <button type="button" onClick={toggleFlgConfirmation}>確認</button>}
       {flgConfirmation  && <button type="button" onClick={toggleFlgConfirmation}>修正</button>}
-      {flgConfirmation  && <button type="button" onClick={accountRegister}>登録</button>}
+      {flgConfirmation  && <button type="submit">登録</button>}
+      {flgConfirmation  &&
+        <div>
+          <SignUpConfirmation
+            first_name            = {watchData.first_name}
+            last_name             = {watchData.last_name}
+            email                 = {watchData.email}
+            phone                 = {watchData.phone}
+            password              = {watchData.password}
+            password_confirmation = {watchData.password_confirmation}
+          />
+        </div>
+      }
     </form>
   )
 };
